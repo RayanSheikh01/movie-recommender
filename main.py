@@ -1,3 +1,4 @@
+from platform import release
 import streamlit as st
 import pandas as pd
 import random
@@ -23,17 +24,21 @@ def getMovieDetails():
                 genres = movie.genres
                 genres = genres.replace("'", '"')
                 genres = json.loads(genres)
-                return [movie_title, genres, poster_path]
+                tagline = movie.tagline
+                release_date = movie.release_date
+                return [movie_title, genres, poster_path, tagline, release_date]
         except:
             pass
     
     
 
-st.title("PickMeMovie")
-st.header("The place where you are recommended your next movie")
+st.title("WhatMovie")
+st.header("Choose a new movie from a press of a button")
 movie = getMovieDetails()
 movie_title = movie[0]
 genres = movie[1]
+tagline = movie[3]
+release_date = movie[4]
 genres_dict = {}
 for genre in genres:
     name = genre['name']
@@ -42,10 +47,22 @@ poster_path = movie[2]
 genres = []
 for genre in genres_dict:
     genres.append(genre)
+genres = str(genres)
+genres = genres.replace("'", "")
 
 
-st.header(movie_title)
-st.write('Genres:')
-for genre in genres:
-    st.write(genre)
-st.image('https://image.tmdb.org/t/p/w500/' + str(poster_path))
+## Create border
+## Put Title, Genre, rating, language, actor next to image 
+
+image_col, details_col = st.columns([2, 5])
+with image_col:
+    st.image('https://image.tmdb.org/t/p/w300/' + str(poster_path))
+with details_col:
+    st.header(movie_title)
+    st.write(release_date+', ' +tagline+ ', '+genres)
+    
+    
+    
+
+st.button('Choose a new movie', on_click=getMovieDetails)
+
